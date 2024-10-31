@@ -21,7 +21,15 @@ WHERE name NOT LIKE '% %';
 -- Задание 2.5
 
 SELECT name FROM track 
-WHERE name LIKE '% my %';
+WHERE name ILIKE '% my %' OR name ILIKE 'my %' OR name ILIKE '% my' OR name ILIKE 'my' OR name ILIKE '% мой %' OR name ILIKE 'мой %' OR name ILIKE '% мой' OR name ILIKE 'мой';
+
+-- Задание 2.5 Альтернативное решение 1
+SELECT name FROM track 
+WHERE string_to_array(lower(name), ' ') && ARRAY['my', 'мой'];
+
+-- Задание 2.5 Альтернативное решение 2
+SELECT name FROM track 
+WHERE name ~* '\mmy\M|\mмой\M'
 
 -- Задание 3.1
 
@@ -67,10 +75,10 @@ WHERE mu.name LIKE 'Penelope Lope';
 
 -- Задание 4.1
 
-SELECT a.name, COUNT(mg.genre_id) FROM musiciansgenres as mg
+SELECT DISTINCT ON (a.name) mg.musician_id,  a.name, COUNT(mg.genre_id) FROM musiciansgenres as mg
 LEFT JOIN albumsmusicians am ON mg.musician_id = am.musician_id 
 LEFT JOIN album as a ON am.album_id = a.id
-GROUP BY a.name
+GROUP BY mg.musician_id, a.name
 HAVING COUNT(mg.genre_id) > 1;
 
 -- Задание 4.2
